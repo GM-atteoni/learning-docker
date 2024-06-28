@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  npm: 
+    build: ./
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./:/app
+
+# Command: 
+# docker-compose --rm run npm init
+# docker-compose --rm run npm install express
+# docker-compose --rm run npm install axios
+
+# To make use of utility containers with docker-compose, we need to use docker-compose run
+# It allows us to run a single service in the docker-compose file and with that we can use commands that will be appended to the entrypoint of that container.

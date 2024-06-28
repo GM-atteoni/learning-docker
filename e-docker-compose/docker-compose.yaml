@@ -1,0 +1,58 @@
+version: "3.8"
+services:
+  mongodb:
+    # container_name: mongodb (With this command you avoind the weird generated names of containers but idk why someone would do that, yet)
+    image: 'mongo'
+    volumes:
+      - data:/data/db
+    env_file:
+      - ./env/db.env
+  goal-app:
+    build: ./backend
+    ports:
+      - '80:80'
+    volumes:
+      - logs:/app/logs
+      - /app/node_modules
+    env_file:
+      - ./env/backend.env
+# This keys says to docker-compose the order of container's creation (mongodb will be created before backend)
+    depends_on:
+      - mongodb
+# For bindmounts we can use relative paths (i.e. ./backend:/app)
+  goal-web:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+# Those two properties are specific for React where we need to use the container attached
+    stdin_open: true
+    tty: true
+    depends_on:
+      - goal-app
+
+# All named volumes have to be listed again here. If we use the same name in different containers, the volume will be shared.
+volumes:
+  data:
+  logs:
+
+
+
+
+# By default with docker compose all container will be removed when we use docker-compose down (we don't need to specify the --rm here)
+
+# When using docker-compose we don't need to specify a netwrok because by default it already creates a network for all containers in the file,
+# we can specify networks inside containers if we want to connect the container to a specific existing network and with that the container would be
+# added to the network being created for all containers in the file and also in the network specified
+
+# If your dockerfile is named other than Dockerfile (i.e. Dockerfile-dev) you can use it like:
+# build:
+#   context: ./backend
+#   dockerfile: Dockerfile-dev
+#   args: some-arg: 1
+# you can specify args here to if you have ARG in the Dockerfile
+
+# docker-compose memorize the services names and you can use the service name to stablish connections (i.e. mongodb://mongodb:27017/course-goals?authSource=admin)
+# even tho the name of the container is 'e-docker-compose-goal-app-1'
+
+# With docker-compose up --build option forces a rebuild in all images even if the image already exists
+# With docker-compose build it will look for all images and build the non existing ones and will NOT run the containers

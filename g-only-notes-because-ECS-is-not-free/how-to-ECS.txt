@@ -1,0 +1,48 @@
+ECS IS BASED ON 4 PRINCIPLES: CONTAINER DEFINITION, TASK DEFINITION, SERVICE, CLUSTER
+
+The AWS Console starts asking you about the container (CONTAINER DEFINITION), you can choose pre-defined images containers such as tomcat, nginx, httpd or custom containers where you can
+define the image to be run.
+
+The custom option lets you define the image, the memory limit, the port mapping (-p 80:80). We can also change advanced settings such as container time limit,
+healthcheck, logs, working directory (WORKDIR /app), environment variables (-e KEY=VALUE), storages (-v), 
+we can overwrite the default command or entrypoint of the command, etc.
+
+FARGATE:Under the container section we can define the task for the container (TASK DEFINITION). There you can say how the server should be configured.
+By default it uses FARGATE, it basically uses serverless mode which means AWS does not create an EC2 instance, instead it stores your 
+container and whenever you have a request it starts the container, handles the request and then stops the container. FARGATE is less expensive
+because you pay for the uptime and with that mode your container is never idle.
+You could also switch from FARGATE to EC2 telling AWS to create EC2 instances for your containers instead.
+
+
+The next step is to configure the service layer. It basically defines how the task is executed. In this step we can for example
+add a load balancer to our application.
+
+The last thing to configure is the cluster. It basilcally means the overall network in which our services run. In this example we have 1 service running
+1 task running 1 container but of course we could have multiple stuff going on. So multiple containers can be defined in the same cluster so that they can 
+talk to each other.
+
+I tried to use ECS on AWS but I am afraid of being charged hehe.
+
+To update your application with the latest version you need to push the new image and then just create a new task revision (a new configuration based 
+on the previous one) based on the same settings before.
+
+For multi-container apps the docker-compose file is not useful but we can use it to have inspirations on how to deploy the containers.
+
+Inside ECS with multiple containers we can't use the container name as a address reference in the application even if they are on the same network.
+The reason for that is that on ECS each container can be and probably would be running in different machines.If your containers are added in the same task 
+then they will be in the same machine and then we can use localhost to refeer the containers. (instead of mongodb:27017/... we can use localhost:27017/...)
+
+i.e. We can change the application URL to use ENV variables and by default this variable can be mongodb for development but on ECS we can
+send a new ENV variable as localhost, with that local development would work with mongodb because docker connects the containers by its names
+but on ECS this doesn't works so we are using localhost bc localhost works on ECS.
+
+I kinda stopped following the course because he is using very complex stuff on AWS and I can't hands on because I would be charged by AWS.
+
+Basically everything is configured on ECS AWS Console, as I said we can add volumes, env variables, load balancer (It won't create a load balancer but
+you can create one on AWS and then use it on your ECS cluster), etc...
+
+*Volumes are named EFS on ECS. EFS means Elastic File System. To use volumes you need to firtsly create a EFS on AWS and then use it on your task definition.
+
+The course suggests to use Database services instead of using containers with databases inside. For examlpe Amazon RDS, MongoDB Atlas, etc...
+
+To front end applications the course shows that for production we need to use npm build instead of npm start and then use the built code (readable by browser) 

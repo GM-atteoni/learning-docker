@@ -1,0 +1,6 @@
+ECS vs EC2
+
+EC2: EC2 is basically a computer on cloud and I am the owner and the manager of this computer so I need to handle everything 
+about this computer (security, scalability, deploys, etc).
+
+ECS: ECS is an AWS product where I don't need to care about the stuff I'd need to care is I were using EC2.
